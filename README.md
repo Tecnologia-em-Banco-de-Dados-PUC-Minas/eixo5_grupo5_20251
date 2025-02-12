@@ -2,8 +2,8 @@
 Arquitetura de Dados em Nuvem
 
 # TÍTULO DO PROJETO
-`CURSO`
-`ANO/SEMESTRE`
+`Tecnologia em Banco de Dados`
+`2025/1`
 
 Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
 
