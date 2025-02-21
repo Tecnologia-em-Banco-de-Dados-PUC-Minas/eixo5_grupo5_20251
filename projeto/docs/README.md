@@ -26,4 +26,37 @@ evoluem rapidamente (em questão de dias ou semanas). Em resumo, os tumores pode
 - Incapacidade de usar pernas ou braços;
 - Paralisia; entre outros.
 
-# 2. Guia do usuário
+# 2. Guia de instalação
+Se o objetivo for executar a aplicação sem o interesse de recriá-la, deve-se fazer o *build* da imagem Docker fornecida:
+
+```bash
+docker build -t deep-brain .
+docker run deep-brain
+```
+
+Caso seu computar possua uma GPU dedicada, altere o `docker run` para habilitar o uso da GPU:
+
+```bash
+docker build -t deep-brain .
+docker run -gpus all deep-brain
+```
+
+
+Para recriar o ambiente desenvolvimento em sua máquina, recomendamos a instalação do [Miniconda](https://docs.anaconda.com/miniconda/install/#quick-command-line-install).
+Em seguida:
+
+```bash
+conda create -n deep-brain python==3.11
+conda activate deep-brain
+conda install pytorch torchvision torchaudio -c pytorch
+conda install numpy pandas
+```
+
+Ou, em vez de realizar as instalações pelo conda (**recomendado**), pode-se utilizar o `pip` e instalar os pacotes diretamente do `requirements.txt`:
+
+```bash
+conda create -n deep-brain python==3.11
+conda activate deep-brain
+conda install pip
+pip install -r requirements.txt
+```
