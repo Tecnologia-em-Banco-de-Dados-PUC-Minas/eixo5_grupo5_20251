@@ -1,7 +1,7 @@
 # Eixo-5
 Arquitetura de Dados em Nuvem
 
-# TÍTULO DO PROJETO
+# Deep Brain
 `Tecnologia em Banco de Dados`
 `2025/1`
 
