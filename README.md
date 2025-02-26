@@ -22,7 +22,7 @@ Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo de
 
 | Etapa         | Atividades |
 |  :----:   | ----------- |
-| ETAPA 1        |[Documentação de Contexto](projeto/README.md) |
+| ETAPA 1        |[Documentação de Contexto](projeto) |
 | ETAPA 2        |[Coleta de Dados](projeto/coleta_dados.md) |
 | ETAPA 3        |[Pré-processamento](projeto/pre_processamento.md) |
 | ETAPA 4        |[Aprendizagem de Máquina](projeto/aprendizado_maquina_rev.md)|
