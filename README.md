@@ -5,7 +5,7 @@ Arquitetura de Dados em Nuvem
 `Tecnologia em Banco de Dados`
 `2025/1`
 
-Descrever resumidamente, em um ou dois parágrafos, o projeto que está sendo desenvolvido.
+O Deep Brain é uma aplicação de machine learning capaz de detectar tumores (glioma, meningioma e pituitário) em imagens de ressonância magnética do cérebro.
 
 ## Integrantes
 * Fernando Queiroz de Paula
