@@ -152,3 +152,119 @@ No caso de modelos de *computer vision*, como é o caso deste projeto, a etapa d
 É importante destacar que as redes convulacionais, assim como todos os modelos de aprendizado profundo no geral, fazem parte dos chamados modelos representacionais. Isto implica que técnicas de engenharia de variáveis não são estritamente necessárias, uma vez que o próprio modelo, atráves do ajuste dos pesos dos neurônios, é responsável por encontrar as *representações* que melhor correlacionam a variável-resposta com as variáveis-preditoras. Ainda assim, realizar as técnicas descritas ajuda o modelo a generalizar melhor (isto é, mitiga o *overfitting*). Por fim, vale notar que há muitas outras técnicas possíveis (como, por exemplo, o espelhamento vertical, que não foi usado) que poderiam ser exploradas.
 
 O código que executa a etapa de pré-processamento dos dados está no *notebook* **development.ipynb** dentro da pasta "notebooks". Ao fim do trabalho, todo código contido no notebook será migrado para *scripts* Python de modo a obedecer as boas práticas de desenvolvimento de software. Optamos por escrever o código preliminarmente em notebooks pela facilidade de experimentação.
+
+# 6. Desenvolvimento do modelo
+
+A tarefa de classificar imagens associadas a rótulos pode ser realizada através de diferentes técnicas de aprendizado de máquina, no entanto, o método mais usado na academia e na indústria faz parte do chamado **aprendizado profundo** (*deep learning*). Esta técnica consiste no uso de redes neurais profundas, ou densas, as quais são formadas por diversas camadas ocultas (*hidden layers*) de neurônios entre a camada de entrada (*input layer*) e a camada de saída (*output layer*). O número de camadas na rede é um hiperparâmetro passível de ser otimizado, além do número de neurônios que cada camada terá. Os hiperparâmetros da rede são:
+
+- Número de camadas,
+- Número de neurônios,
+- Taxa de aprendizado (*learning rate*),
+- Função de ativação (é a função matemática de cada neurônio responsável por determinar se o neurônio deve ou não ser ativado, além de possibilitar o aprendizado de relações não lineares nos dados),
+- Tamanho do batch,
+- *Dropout rate* (a taxa que determina o "desligamento" de certos neurônios de maneira aleatória a fim de mitigar o sobreajuste, isto é, a perda na capacidade de generalização do aprendizado para novos dados),
+- Otimizador (Adam, *Stochastic Gradient Descent* etc.)
+- Método de inicialização dos pesos.
+
+A partir de redes neurais "básicas", pode-se construir diferentes redes especializadas em determinadas tarefas. As redes neurais convolucionais são um tipo de arquitetura de rede neural profunda amplamente utilizada em tarefas de processamento de imagens, reconhecimento de padrões e visão computacional. Sua principal característica é a capacidade de extrair automaticamente características espaciais e hierárquicas dos dados por meio de camadas convolucionais.
+
+O funcionamento das CNNs baseia-se na aplicação de filtros (ou *kernels*) que percorrem a imagem de entrada, realizando operações de convolução para detectar padrões locais, como bordas, texturas e formas. Cada filtro aprende a identificar uma característica específica durante o processo de treinamento. Após as camadas convolucionais, são frequentemente utilizadas camadas de pooling, que reduzem a dimensionalidade dos dados, preservando as informações mais relevantes e contribuindo para a generalização do modelo.
+
+Ao final da rede, camadas totalmente conectadas (fully connected) são empregadas para realizar a classificação com base nas representações extraídas anteriormente. Devido à sua capacidade de capturar relações espaciais e aprender representações discriminativas, as CNNs se tornaram a abordagem padrão para diversas aplicações em análise de imagens e sinais visuais. 
+
+## 6.1. Treino
+
+O **Deep Brain** possui como *core* uma rede neural convolucional treinada em um *dataset* de imagens de ressonância magnética que contêm tumores cerebrais de diferentes tipos, além de imagens de cérebros saudáveis (class negativa), como explicado na primeira seção deste documento. O modelo foi treinado em um MacBook Air M1 que não possui GPU (placas gráficas), o que torna o treinamento do modelo bastante lento. As GPUs são particularmente eficientes no treino de redes neurais profundas por serem *hardware* especializado em operações matriciais, particularmente multiplicação de matrizes. O modelo demorou 1h30 para ser treinado. 
+
+## 6.2. Seleção de modelo (otimização de hiperparâmetros)
+
+Não realizamos nenhum tipo de otimização de hiperparâmetro devido à ausência de GPU, o que tornaria todo o processo de treino extremamente demorado (potencialmente levando um dia ou mais até todo o processo terminar). No entanto, é importante destacar que o *hyperparameter tuning* é um processo corriqueiro e extremamente recomendado por possibilitar o aumento considerável de performance e a mitigação do sobreajuste. Há vários métodos para realizá-lo, mas 3 se destacam:
+
+- **GridSearch**: consiste na definição de um espaço de hiperparâmetros e no ajuste do modelo utilizando cada uma das combinações possíveis. Ao final, escolhe-se a seleção que maximiza o a métrica de avaliação escolhida para o modelo. É um método clássico mas potencialmente problemático, uma vez que, se o espaço de escolha for demasiado grande, o número de combinações "explodirá" e o processo pode demandar dezenas de horas ou dias, a depender do hardware e da rede que se quer treinar. O ponto positivo é que se explora todas as combinações possíveis de hiperparâmetro,
+- **RandomSearch**: similar ao método acima, mas a escolha de hiperparâmetros é feita de maneira randômica, encurtando o tempo de otimização mas sem a garantia de que a melhor combinação será encontrada,
+- **Otimização Bayesiana**: esta técnica vale-se do teorema de Bayes para explorar um espaço de hiperparâmetro, combinada com um processo de otimização (minimização de uma *loss*). Ela utiliza modelos probabilísticos, como processos Gaussianos ou árvores de regressão, para modelar a função de desempenho do modelo e selecionar novos pontos promissores com base em critérios de aquisição relacionados à metrica de modelagem. É um dos métodos mais utilizados pois, apesar de não garantir a convergência para a seleção ótima, produz resultados *near optimal* em tempo razoável.
+
+## 6.3. Redes pretreinadas (*transfer learning*)
+
+Além do desenvolvimento de uma rede convolucinal do zero, poder-se-ia ter optado pelo uso de uma rede pré-treinada, o que é mais comum de se observar na academia e na indústria. Estas redes foram previamente treinadas em *datasets* massivos de imagens e podem ser reutilizadas para uma tarefa específica que se queira executar (como a classificação de imagens médicas). O benefício do uso de redes deste tipo é a possibilidade de detectar relações nos dados bastante sutis, além de economizar em tempo de treinamento do modelo. A técnica de transferir o aprendizado em um domínio para outro chamamos de transferência de aprendizado, ou *transfer learning*. Há dois métodos possíveis para isto: 
+
+- **Extração de features**: todas as camadas convolucionais ficam congeladas e apenas as camadas totalmente conectadas (*fully connected layers*), chamadas de *classification head*, são atualizadas a partir do novo conjunto de dados. A vantagem desta técnica é a velocidade e o menor risco de sobreajuste, com a desvantagem da perda de relações mais sutis e de baixo nível entre os dados. No geral, é melhor que o novo conjunto de dados seja similar que o conjunto de treino da rede,
+- **Fine-tuning**: neste caso, todas a camadas (mas não *necessariamente* todas) podem ser atualizadas, desde as totalmente conectadas até as convolucionais. "Atualizar" uma camada nada mais é do que atualizar o peso de cada neurônio. A vantagem é a possibilidade de aprender nuances nos dados e obter um modelo mais eficiente na tarefa, mas a exigência de tempo e de volume de dados é bastante maior.
+
+# 7. Avaliação de resultados
+
+## 7.1. Matriz de confusão
+
+Em problemas de classificação, a matriz de confusão relaciona os desfechos observados (empíricos, reais) e os estimados pelo modelo estatístico. Através dela é possível computar os erros de tipos I e II, além de analisar a performance geral do classificador. A matriz de confusão é a base para o cálculo de muitas outras métricas de avaliação de modelos estatísticos, como veremos abaixo.
+
+## 7.2. *Precision, recall* e *F1-score*
+
+Para avaliar os resultados, plotamos a curva que relaciona a *loss* em cada época de treino (as perdas devem diminuir progressivamente, ainda que pequenas flutuações sejam possíveis de uma época par aoutra) para avaliar o processo de treino do modelo e, posteriormente, visualizamos algumas métricas de classificação através do objeto ```classification report``` da biblioteca *Scikit-learn* e da plotagem das curvas *Precision-Recall* para cada classe (tipo de tumor) junto de suas linhas iso-F1.
+
+A curva PR relaciona *scores* de precision e recall (ou sensibilidade). A *precision* consiste na razão entre previsões da classe positiva (ou seja, prever que uma imagem contém um tumor) e os acertos destas previsões. Por exemplo, se o modelo realizar 10 previsões afirmando a presença de tumor mas apenas 4 das imagens as contiver, a precision será de 40%. A sensibilidade (*recall*), por outro lado, mede o quanto de observações da classe positiva realmente foram capturadas. Se o modelo foi capaz de prever corretamente a presença de tumor em 6 imagens de tumor em um conjunto que contenha 10, então a sensibilidade é de 60%. Matematicamente, a *precision* é definida por:
+
+$$
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+$$
+
+Em que TP = *True Positives* = Verdadeiros Positivos e FP = *False Positives* = Falsos Positivos. A *precision* controla a taxa do erro tipo I, isto é, rejeitar a hipótese nula quando não se tem evidências suficientes para fazê-lo (nota-se que, tecnicamente, é incorreto dizer *aceitar* ou *provar* a hipótese nula). Esta métrica está totalmente relacionada com a taxa de falso positivo (alpha). Dito de uma forma mais simples, sobretudo num contexto de aprendizado de máquina, a *precision* controla a taxa na qual o modelo resulta em classificação positiva para tumor em uma imagem de um cérebro saudável. Já a sensibilidade é matematicamente descrita pela seguinte equação:
+
+$$
+\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+$$
+
+Em que FN = *False Negatives* = Falsos Negativos. Neste caso, consiste em não rejeitar a hipótese nula quando há evidências para fazê-lo. No nosso contexto, significa que o modelo falhou em detectar uma imagem que contém tumor, classiicando-a como saudável. Em modelagem, a etapa de definição dos **custos** de cada erro é extremamente importante para balizar a ênfase que se deve dar no modelo. Por exemplo, em um cenário de marketing, o custo de oferecer um produto para um cliente que está fora das regras de negócio não é tão grande - no máximo um cliente comprará um produto que não foi feito para o público ao qual pertence. Ou então realizar comunicação a um cliente que possui determinado cartão de crédito, com base em um modelo de *churn* (cancelamento do cartão) que estima alta probabilidade de cancelamento para um cliente que não ia, de fato, cancelar - pode-se gerar atrito, mas nada grave acontecerá. No entanto, no contexto clínico, pode haver consequências bastante graves para cada tipo de erro. 
+
+A classificação incorreta da presença de uma doença em um determinado paciente pode trazer transtornos ao demandar novos exames para assegurar de que o resultado é verídico ou ao obrigar que o paciente permaneça no hospital (no caso de doenças infecto-contagiosas), mas, via de regra, é preferível do que a ocorrência de falsos negativos, momento no qual um paciente com uma doença altamente contagiosa e/ou potencialmente grave volta para casa com a falsa informação de que é saudável. 
+
+Como esta solução trata de um modelo de classificação de tumor, a taxa de falso negativo deve ser a menor possível, sob risco de dizer a um paciente que ele é saudável quando, na realidade, não é. Isto o leva a perder tempo no tratamento do tumor o que, em oncologia, é extramente sério. Portanto, deseja-se maximizar a sensibilidade do modelo. Ao mesmo tempo, não se pode perder de vista que um modelo com sensibilidade extremamente alta mas precisão baixa é essencialmente irrelevante. No limite, para maximizar a sensibilidade, basta classificar todos, ou quase todos, os pacientes como portadores de um tumor, o que é, evidentemente, absurdo. Assim, é necessário que a previsão do modelo seja bastante confiável e que, além disso, ele seja sensível à presença de tumor. É por isso que testes diagnósticos costumam ter tanto a *precision* quanto o *recall* em valores extremamente altos (ex: 99% ou 99.9%). 
+
+Uma métrica que balanceia estas duas outras é o F1-score. Ele consiste em uma média harmônica entre precisão e sensibilidade. Um ponto negativo é que um mesmo valor de F1-score pode ser obtido através de valores muito diferentes de precisão e sensibilidade. Se a precisão e a sensibilidade tiverem o mesmo valor, ou forem muito próximos, então o F1-score terá um valor também próximo ou igual a estas métricas. Se, no entanto, a precisão estiver muito distante da sensibilidade (e vice-versa), poderíamos obter o mesmo valor de F1 em relação ao anterior (ou seja, se, em ambos os exemplos, a precisão e a sensibilidade tiverem valores tais que a média harmônica entre eles resulta no mesmo valor). Outro ponto desfavorável da métrica F1 é que ela não incorpora o tamanho das classes, ou seja, o desbalanceamento em um conjunto de dados não é levado em consideração, o que pode levar a uma interpretação exageradamente otimista sobre um classificador.
+
+É importante destacar que a precisão e a sensibilidade costumam caminhar em sentido oposto, isto é: quanto maior a precisão, menor tende a ser o recall.
+
+## 7.3. Coeficiente de correlação de Matthews (do inglês *Matthews' correlation coefficient*)
+
+Esta métrica (MCC) não é frequentemente utilizada na indústria, mas é bastante relevante no contexto clínico e de bioestatística. O coeficiente de correlação de Matthews mede o quanto um estimador está associado aos desfechos observados. Em problemas de classificação binária, reduz-se ao coeficiente de correlação de Pearson. A vantagem de se utilizar o MCC é que ela incorpora o desbalanceamento das classes, removendo o falso otimismo que o score F1 pode oferecer. O valor desta métrica está contido no intervalo ```[-1, 1]```, em que -1 indica que as previsões e o desfecho observado caminham em sentido posto (negativamente associados ou correlacionados), 0 indica correlação idêntica ao aleatório e +1 indica correlação perfeita.
+
+## 7.4. Resultados obtidos na modelagem
+
+Foi necessária 1h45min para o treino do modelo em 10 épocas. Os resultados foram os seguintes:
+
+Gráfico 1: Matriz de confusão.
+
+![Matriz de confusão](/projeto/docs/matriz_confusao.png)
+
+Tabela 1: Performance do modelo.
+
+| Class | Precision | Recall | F1-score |
+| ------ | --------- | ------- | ------ |
+| glioma  | 0.92 | 0.63 | 0.74 |
+| meningioma  | 0.64 | 0.68 | 0.66 |
+| pituitary  | 0.93 | 0.96 | 0.94 |
+| notumor  | 0.85 | 0.99 | 0.91 |
+
+Gráfico 2: Curvas *Precision-Recall* e linhas iso-F1.
+
+![Curvas PR e linhas iso-F1](/projeto/docs/curvas_pr.png)
+
+Coeficiente de correlação de Matthews do modelo: 77.1%.
+
+Com base nos resultados obtidos, observa-se que o modelo foi capaz de aprender a realizar a tarefa desejada, se saindo relativamente bem na detecção de todos os tipos de tumores apresentados. Há, todavia, possíveis ressalvas com relação ao meningioma e, em menor grau, ao glioma. O modelo parece ter dificuldade na detecção do meningioma, ainda que sua frequência seja praticamente a mesma dos outros tipos de tumor. Quanto ao glioma, a precisão do modelo é bastante grande, mas há uma leve perda em sensibilidade com relação à performance na detecção do tumor na glândula pituitária. Quando o modelo classifica alguém como saudável, podemos ter razoável confiança de que a pessoa é, de fato, saudável (para cada 100 previsões de ausência de câncer, o modelo acerta em 85 delas e consgue abranger 91% de todas as imagens que não possuem tumor).
+
+O ranqueamento das classes em termos de performance é: 
+
+1. Pituitário,
+2. Glioma,
+3. Meningioma,
+4. Ausência de tumor.
+
+## 7.5. Possíveis melhorias
+
+- Aumento das épocas de treino (não exige nenhuma mudança nas configurações do modelo em si),
+- Otimização de hiperparâmetros via busca Bayesiana (implementada pelo pacote *HyperOpt*),
+- Utilização de uma rede pré-treinada e *transfer learning* para aumento de performance, sobretudo no caso do glioma.
+
+## 7.6. Utilização
+
+No cenário hipotético do projeto (ambiente hospitalar), recomendaríamos que o modelo fosse utilizado como suporte à tomada de decisão em equipe multidisciplinar constituída de médico oncologista, físico médico e radiologista. **Para investigações relativas ao tumor do tipo glioma, não se recomenda o uso**.
