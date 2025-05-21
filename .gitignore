@@ -1,0 +1,31 @@
+# Ignore model weights and large files
+*.pth
+*.pt
+*.ckpt
+*.h5
+
+# Ignore dataset files
+*.zip
+*.tar
+*.tar.gz
+*.npz
+*.npy
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.so
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environments
+.env/
+venv/
+ENV/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore logs
+*.log
