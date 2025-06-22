@@ -268,3 +268,60 @@ O ranqueamento das classes em termos de performance é:
 ## 7.6. Utilização
 
 No cenário hipotético do projeto (ambiente hospitalar), recomendaríamos que o modelo fosse utilizado como suporte à tomada de decisão em equipe multidisciplinar constituída de médico oncologista, físico médico e radiologista. **Para investigações relativas ao tumor do tipo glioma, não se recomenda o uso**.
+
+# 8. Termos de uso
+
+Estes Termos de Uso ("Termos") regulam o uso da solução de inteligência artificial DeepBrain, desenvolvida para auxiliar na classificação de imagens de ressonância magnética (RM) cerebral com o objetivo de indicar a presença ou ausência de tumores. Ao utilizar o DeepBrain, o usuário declara que leu, compreendeu e concorda com estes Termos.
+
+## 8.1. Finalidade da solução
+
+O DeepBrain é uma ferramenta de apoio ao diagnóstico por imagem, baseada em modelos de aprendizado de máquina, destinada exclusivamente a profissionais de saúde qualificados ou instituições devidamente autorizadas, como hospitais, clínicas ou centros de diagnóstico por imagem.
+
+O modelo tem como finalidade classificar imagens de RM cerebral quanto à probabilidade de presença de tumores, não substituindo avaliação médica, parecer clínico ou diagnóstico definitivo.
+
+## 8.2. Uso permitido
+
+Ao utilizar o DeepBrain, o usuário se compromete a:
+- Utilizar a ferramenta somente para fins médicos, científicos ou educacionais autorizados;
+- Garantir que as imagens analisadas foram obtidas com consentimento informado do paciente, sempre que aplicável;
+- Integrar os resultados fornecidos pelo modelo a uma avaliação clínica completa realizada por um profissional médico responsável;
+- Manter confidencialidade e segurança dos dados inseridos, conforme a Lei Geral de Proteção de Dados Pessoais (LGPD) e outras normas aplicáveis.
+
+## 8.3. Limitações da solução
+
+- O DeepBrain não realiza diagnósticos médicos. A classificação fornecida é uma previsão probabilística, com base em dados de treinamento, e pode conter falsos positivos ou negativos.
+- A performance do modelo pode variar de acordo com a qualidade, resolução e padrão das imagens submetidas.
+- A solução não substitui avaliação por neuroimagem realizada por radiologistas ou neurologistas.
+
+## 8.4. Responsabilidades do usuário
+
+O usuário é inteiramente responsável por:
+- Validar os resultados fornecidos pelo modelo antes de qualquer tomada de decisão clínica;
+- Utilizar a ferramenta em conformidade com a legislação vigente, incluindo regulamentações médicas e éticas;
+- Garantir que dados pessoais e sensíveis utilizados no sistema estejam devidamente anonimizados, quando necessário.
+
+## 8.5. Privacidade e proteção de dados
+A equipe de desenvolvimento do DeepBrain compromete-se a realizar manutenções periódicas, quando necessárias. No entanto, é de responsabilidade da instituição usuária assegurar:
+- O tratamento adequado dos dados dos pacientes;
+- A obtenção de consentimento quando exigido;
+- A implementação de medidas técnicas e administrativas de proteção, em conformidade com a LGPD (Lei nº 13.709/2018).
+
+No item 3 desta documentação, apresentamos os aspectos de governança necessários para assegurar a conformidade legal deste projeto. Destacamos os tipos de dados coletados (dados sensíveis e/ou identificáveis; dados biométricos; entre outros), a anonimização de dados e a retenção dos dados por período adequado. 
+
+O modelo desenvolvido nas etapas anteriores entrega um escore de probabilidade relacionado à presença de um determinado tipo de tumor cerebral para cada imagem de ressonância magnética analisada. Essa imagem diz respeito a um paciente, o qual deve ser identificado por um identificador único e universal (*uuid - universally unique identifier*). Cada paciente deve possuir uma tabela fato contendo os resultados de exames médicos que vão ser relacionados com os dados cadastrais deste paciente através de uma tabela dimensão contendo CPF, RG, telefone de contato etc. Estes dados cadastrais devem ser anonimizados através, por exemplo, de *hash functions*.
+
+A retenção dos resultados de exame devem ser feitas pelo menor período de tempo necessário. A Lei Geral de Proteção de Dados (LGPD) não determina especificamente os prazos para retenção de dados, apenas princípios e diretrizes. No entanto, por se tratar de instituição médica, há base legal de acordo com o Conselho Federal de Medicina (Resolução CFM nº 1.821/2007) e o Ministério da Saúde:
+- Prontuários físicos ou digitais: interpretamos como o conjunto de dados do paciente, incluindo dados cadastrais e resultados de exames médicos (desde que estes resultados estejam claramente associados ao prontuário). Devem ser armazenados por 20 anos a partir do último registro no prontuário. Após este período, os dados podem ser descartados, desde que não haja razão legal para não o fazer;
+- Dados cadastrais: idem. Além disso, aplica-se também o art. 15 da LGPD segundo o qual os dados cadastrais devem ser retidos enquanto necessários para determinações legais;
+- Exames laboratoriais e de imagem: idem;
+- Exceções legais e/ou regulatórias: em situações judiciais, fiscais, ou regulatórias (como investigações), os dados podem ser mantidos até o encerramento completo da demanda, mesmo que ultrapassem 20 anos.
+
+## 8.6. Propriedade intelectual
+
+A tecnologia DeepBrain, incluindo seu código-fonte, arquitetura, modelo de aprendizado de máquina e documentação associada, é de propriedade do desenvolvedor responsável e protegida pelas leis de propriedade intelectual. É proibida a engenharia reversa, cópia, redistribuição ou comercialização não autorizada da solução.
+
+## 8.7. Disposições gerais
+
+Estes Termos poderão ser modificados a qualquer momento, mediante aviso prévio.
+
+O foro competente para dirimir quaisquer dúvidas ou conflitos decorrentes destes Termos será o da comarca de [cidade do desenvolvedor ou sede da empresa], com renúncia expressa a qualquer outro.
